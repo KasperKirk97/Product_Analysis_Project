@@ -2,9 +2,6 @@
 name = "pageview-project"
 version = "0.1.0"
 
-[tool.vercel]
-entrypoint = "pageview_project.main:app"
-
 dependencies = [
     "fastapi==0.141.1",
     "uvicorn[standard]==0.52.4",
@@ -16,4 +13,9 @@ dependencies = [
     "pydantic==2.13.5",
     "streamlit==1.63.0"
 ]
+
+[tool.vercel]
+entrypoint = "pageview_project.main:app"
+
+
 
