@@ -1,6 +1,6 @@
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://productanalysisproject-t2j9.vercel.app/";
+  "https://productanalysisproject-t2j9.vercel.app";
 import type { TreemapData, ComparisonData } from "@/types/api";
 
 export async function getAirports() {
