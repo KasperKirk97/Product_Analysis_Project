@@ -1,2 +1,6 @@
+[project]
+name = "pageview-project"
+version = "0.1.0"
+
 [tool.vercel]
 entrypoint = "pageview_project.main:app"
