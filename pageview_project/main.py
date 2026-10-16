@@ -13,7 +13,8 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000"
+        "http://localhost:3000",
+        "productanalysisproject-t2j9.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
