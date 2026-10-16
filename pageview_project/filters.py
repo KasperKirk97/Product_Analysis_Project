@@ -7,7 +7,6 @@ def product_filter(df,products):
         .dropna()
         .unique()
     )
-
     selected_products = st.sidebar.multiselect(
         "Products",
         available_products,
@@ -16,9 +15,18 @@ def product_filter(df,products):
     )
     return selected_products
 
+def product_filter2(available_products,products):
+    selected_products = st.sidebar.multiselect(
+        "Select Products",
+        available_products,
+        default=available_products,
+        format_func=lambda x: products.get(x, x)
+    )
+    return selected_products
+
 def customer_filter():
     customer_type = st.sidebar.radio(
-        "User Type",
+        "Select User Type",
         [
             "All",
             "Customers",

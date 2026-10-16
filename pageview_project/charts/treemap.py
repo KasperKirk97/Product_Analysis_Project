@@ -13,7 +13,17 @@ class TreemapData:
     users: list
     log_views: list
     percent_root: list
-    df: pd.DataFrame
+
+@dataclass
+class ComparisonData:
+    ids: list
+    parents_b: list
+    views_b: list
+    users_b: list
+    log_values_b: list
+    percent_root_b: list
+    percent_root_a: list
+    view_change_pct: list
 
 @lru_cache(maxsize=None)
 def get_nodes(path):
@@ -27,12 +37,15 @@ def get_nodes(path):
         for i in range(len(parts))
     ]
 
-def index_dataframe(df):
+def build_treemap_data(df):
     grouped = (
         df.groupby("view_name")
         .agg(
-            views=("view_name", "size"),
-            users=("user_id", lambda x: set(x))
+            views=("views", "sum"),
+            users=(
+                "user_id",
+                lambda x: set(x)
+            ),
         )
     )
     nodes = {}
@@ -69,15 +82,6 @@ def index_dataframe(df):
         100 * v / total_views
         for v in views
     ]
-    info_df = pd.DataFrame({
-        "id" : ids,
-        "parent" : parents,
-        "views" : views,
-        "users" : users,
-        "log_values" : log_values,
-        "percent_root" : percent_root
-    })
-
     return TreemapData(
         ids = ids,
         parents = parents,
@@ -85,17 +89,33 @@ def index_dataframe(df):
         users = users,
         log_views = log_values,
         percent_root = percent_root,
-        df = info_df
     )
 
-def plot_comparison_graph(df_a,df_b,color_range):
-    a = index_dataframe(df_a)
-    b = index_dataframe(df_b)
+def build_comparison_data(df_a,df_b):
+    a = build_treemap_data(df_a)
+    b = build_treemap_data(df_b)
+
+    a_df = pd.DataFrame({
+            "id" : a.ids,
+            "parents" : a.parents,
+            "views" : a.views,
+            "users" : a.users,
+            "log_values" : a.log_views,
+            "percent_root" : a.percent_root
+    })
+    b_df = pd.DataFrame({
+                "id" : b.ids,
+                "parents" : b.parents,
+                "views" : b.views,
+                "users" : b.users,
+                "log_values" : b.log_views,
+                "percent_root" : b.percent_root
+    })
 
     comparison = (
-        b.df
+        b_df
         .merge(
-            a.df,
+            a_df,
             on="id",
             how="outer",
             suffixes=("_b", "_a")
@@ -112,18 +132,32 @@ def plot_comparison_graph(df_a,df_b,color_range):
         / comparison["percent_root_b"]
     )
 
+    return ComparisonData(
+        ids=comparison["id"].tolist(),
+        parents_b=comparison["parents_b"].tolist(),
+        views_b=comparison["views_b"].tolist(),
+        users_b=comparison["users_b"].tolist(),
+        log_values_b = comparison["log_values_b"].tolist(),
+        percent_root_b=comparison["percent_root_b"].tolist(),
+        percent_root_a=comparison["percent_root_a"].tolist(),
+        view_change_pct=comparison["view_change_pct"].tolist(),
+    )
+
+def plot_comparison_graph(df_a,df_b,color_range):
+    comparison = build_comparison_data(df_a,df_b)
+
     customdata = list(zip(
-        comparison["views_b"], 
-        comparison["users_b"], 
-        comparison["percent_root_b"], 
-        comparison["percent_root_a"]
+        comparison.views_b, 
+        comparison.users_b, 
+        comparison.percent_root_b, 
+        comparison.percent_root_a
     ))
     fig = go.Figure(
         go.Treemap(
-            ids=comparison["id"],
-            labels = [node.split(".")[-1] for node in comparison["id"]],
-            parents = comparison["parent_b"],
-            values = comparison["log_values_b"],
+            ids=comparison.ids,
+            labels = [node.split(".")[-1] for node in comparison.ids],
+            parents = comparison.parents_b,
+            values = comparison.log_values_b,
             branchvalues="remainder",
             customdata=customdata,
             texttemplate=(
@@ -134,7 +168,7 @@ def plot_comparison_graph(df_a,df_b,color_range):
                 "%{customdata[3]:.3f}% of views in A"
             ),
             hovertemplate=(
-                "<b>%{id}</b><br>"
+                "<b>%{ids}</b><br>"
                 "Views: %{customdata[0]:r,.0f}<br>"
                 "Users: %{customdata[1]:r,.0f}<br>"
                 "Share B: %{customdata[2]:.3f}% of total views<br>"
@@ -142,7 +176,7 @@ def plot_comparison_graph(df_a,df_b,color_range):
                 "<extra></extra>"
             ),
             marker=dict(
-                colors=comparison["view_change_pct"],
+                colors=comparison.view_change_pct,
                 colorscale="RdYlGn",
                 cmin = -color_range,
                 cmax = color_range,
@@ -158,12 +192,10 @@ def plot_comparison_graph(df_a,df_b,color_range):
         )
     )
     fig.update_layout(height=1000)
-    return fig
-
-    
+    return fig 
 
 def plot_view_name_graph(df):
-    info = index_dataframe(df)
+    info = build_treemap_data(df)
     # Plot
     customdata = list(zip(info.views, info.users, info.percent_root))
     fig = go.Figure(
@@ -181,7 +213,7 @@ def plot_view_name_graph(df):
                 "%{customdata[2]:.3f}% of views"
             ),
             hovertemplate=(
-                "<b>%{id}</b><br>"
+                "<b>%{ids}</b><br>"
                 "Views: %{customdata[0]:r,.0f}<br>"
                 "Users: %{customdata[1]:r,.0f}<br>"
                 "Share: %{customdata[2]:.3f}% of total views"

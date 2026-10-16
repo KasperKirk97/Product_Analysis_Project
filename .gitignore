@@ -1,3 +1,4 @@
 # Large data files
 *.csv
 pageview_project/data/
+.env

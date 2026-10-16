@@ -1,31 +1,30 @@
 import streamlit as st
 from pageview_project.constants import(data_dir,PRODUCTS,QUICK_SELECT_OPTIONS)
-from data_loader import load_files
+from pageview_project.database.data_loader import (load_page_views,load_files,get_available_airports)
 from pageview_project.filters import(product_filter,date_filter,customer_filter,apply_customer_filter)
 from charts.treemap import plot_comparison_graph
 
 def render_dataset_comparison():
-    csv_files = sorted(
-            [file.name for file in data_dir.glob("*.csv")]
-        )
+    airports = get_available_airports()
+    
     st.header("Dataset Comparison")
     st.text("This function makes a tree map of dataset B, where the coloring indicates how much more or less a page view is used than in dataset A. The comparison is based on percentage differences.")
     dataset_a = st.multiselect(
         "Dataset A",
-        csv_files,
-        default=[csv_files[0]] if csv_files else []
+        airports,
+        default=[airports[0]] if airports else []
     )
 
     dataset_b = st.multiselect(
         "Dataset B",
-        csv_files,
-        default=[csv_files[-1]] if csv_files else []
+        airports,
+        default=[airports[-1]] if airports else []
     )
     if not dataset_a or not dataset_b:
         st.warning("Select at least one file in each dataset")
         st.stop()
-    df_a = load_files(data_dir, tuple(dataset_a))
-    df_b = load_files(data_dir, tuple(dataset_b))
+    df_a = load_page_views(dataset_a)
+    df_b = load_page_views(dataset_b)
 
     selected_products = product_filter(df_b,PRODUCTS)
 
