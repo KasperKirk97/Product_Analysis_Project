@@ -1,6 +1,13 @@
 "use client";
 
-import Plot from "react-plotly.js";
+import dynamic from "next/dynamic";
+
+const Plot = dynamic(
+  () => import("react-plotly.js"),
+  {
+    ssr: false,
+  }
+);
 import type { TreemapData } from "../types/api.ts";
 
 type TreemapProps = {
