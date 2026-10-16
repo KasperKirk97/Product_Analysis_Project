@@ -1,0 +1,2 @@
+[tool.vercel]
+entrypoint = "pageview_project.main:app"
