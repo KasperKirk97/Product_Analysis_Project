@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { getAirports } from "../../lib/api";
+import { AirportGroups } from "@/types/api";
 
 export function useAirports() {
 
   const [airports, setAirports] =
-    useState<Record<string, string[]>>({});
+    useState<AirportGroups>({});
 
   const [loadingAirports, setLoadingAirports] =
     useState(true);

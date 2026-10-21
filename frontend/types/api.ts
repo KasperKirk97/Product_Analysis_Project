@@ -22,3 +22,8 @@ export type Product = {
   id: string;
   name: string;
 };
+
+export type AirportGroups = Record<
+  string,
+  string[]
+>;
