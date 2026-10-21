@@ -73,10 +73,10 @@ export default function ComparisonPage() {
   useEffect(() => {
 
     if (
-      !initialized && airports.length > 1
+      !initialized && Object.keys(airports).length > 1
     ) {
-      setDatasetA([airports[0]]);
-      setDatasetB([airports[1]]);
+      setDatasetA([airports[0][0]]);
+      setDatasetB([airports[1][0]]);
 
       setInitialized(true);
     }

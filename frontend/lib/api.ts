@@ -1,9 +1,9 @@
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "/api";
-import type { TreemapData, ComparisonData } from "@/types/api";
+import type { TreemapData, ComparisonData, AirportGroups } from "@/types/api";
 
-export async function getAirports() {
+export async function getAirports(): Promise<AirportGroups> {
   const response = await fetch(
     `${API_URL}/airports`
   );

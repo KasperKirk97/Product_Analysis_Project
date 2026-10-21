@@ -75,9 +75,9 @@ export default function Home() {
   useEffect(() => {
 
     if (
-      airports.length > 0 && !initialized
+      Object.keys(airports).length > 0 && !initialized
     ) {
-      setSelectedAirports(airports);
+      setSelectedAirports(Object.values(airports).flat());
       setInitialized(true);
     }
 
