@@ -68,6 +68,28 @@ def get_available_airports():
     with get_connection() as conn:
         return pd.read_sql(query,conn)["organization_id"].tolist()
 
+def get_available_realms_and_organizations():
+    query = """
+    SELECT DISTINCT
+        realm,
+        organization_id
+    FROM public.global_usage
+    WHERE organization_id IS NOT NULL
+      AND realm IS NOT NULL
+    ORDER BY realm, organization_id
+    """
+
+    with get_connection() as conn:
+        df = pd.read_sql(query, conn)
+
+    grouped = (
+        df.groupby("realm")["organization_id"]
+        .apply(list)
+        .to_dict()
+    )
+
+    return grouped
+
 def get_available_products(selected_airports):
     query = """
     SELECT DISTINCT product_short_name

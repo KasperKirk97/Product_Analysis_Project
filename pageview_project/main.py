@@ -2,7 +2,7 @@ import pandas as pd
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from datetime import date
-from pageview_project.database.data_loader import (get_available_airports, load_page_views,get_available_products)
+from pageview_project.database.data_loader import (get_available_airports,get_available_realms_and_organizations, load_page_views,get_available_products)
 from pageview_project.charts.treemap import (build_comparison_data,build_treemap_data)
 from pageview_project.filters import apply_customer_filter
 from pageview_project.constants import PRODUCTS
@@ -27,7 +27,7 @@ def root():
 
 @app.get("/api/airports")
 def airports():
-    return get_available_airports()
+    return get_available_realms_and_organizations()
 
 @app.get("/api/products")
 def products(airports: str):

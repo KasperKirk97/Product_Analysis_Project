@@ -4,7 +4,7 @@ import { getAirports } from "../../lib/api";
 export function useAirports() {
 
   const [airports, setAirports] =
-    useState<string[]>([]);
+    useState<Record<string, string[]>>({});
 
   const [loadingAirports, setLoadingAirports] =
     useState(true);
