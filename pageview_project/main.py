@@ -14,7 +14,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "productanalysisproject-t2j9.vercel.app",
+        "https://productanalysisproject.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -25,11 +25,11 @@ app.add_middleware(
 def root():
     return {"status": "ok"}
 
-@app.get("/airports")
+@app.get("/api/airports")
 def airports():
     return get_available_airports()
 
-@app.get("/products")
+@app.get("/api/products")
 def products(airports: str):
 
     airport_list = airports.split(",")
@@ -39,7 +39,7 @@ def products(airports: str):
     "name": PRODUCTS.get(product,product)
     } for product in products]
 
-@app.get("/metadata")
+@app.get("/api/metadata")
 def metadata(airports: str):
     airport_list = airports.split(",")
     
@@ -65,7 +65,7 @@ def metadata(airports: str):
     "max_date": str(result["max_date"].iloc[0])
     }
 
-@app.get("/treemap")
+@app.get("/api/treemap")
 def treemap(
     airports: str,
     products: str | None = None,
@@ -81,7 +81,7 @@ def treemap(
     
     return build_treemap_data(df)
 
-@app.get("/comparison")
+@app.get("/api/comparison")
 def comparison(
     dataset_a: str,
     dataset_b: str,
