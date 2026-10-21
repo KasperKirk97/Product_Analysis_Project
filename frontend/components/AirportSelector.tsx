@@ -1,5 +1,5 @@
 import { AirportGroups } from "@/types/api";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 type Props = {
   airports: AirportGroups;
@@ -12,6 +12,8 @@ export default function AirportSelector({
   selectedAirports,
   onChange,
 }: Props) {
+  const [selectedLetters, setSelectedLetters] = useState<string[]>([]);
+
   const toggleAirport = (airport: string) => {
     if (selectedAirports.includes(airport)) {
       onChange(selectedAirports.filter((item) => item !== airport));
@@ -38,7 +40,24 @@ export default function AirportSelector({
     );
   }, [airports]);
 
-  const letters = groupedByLetter.map(([letter]) => letter);
+  const availableLetters = groupedByLetter.map(([letter]) => letter);
+
+  const visibleGroups =
+    selectedLetters.length === 0
+      ? groupedByLetter
+      : groupedByLetter.filter(([letter]) =>
+          selectedLetters.includes(letter)
+        );
+
+  const toggleLetter = (letter: string) => {
+    if (selectedLetters.includes(letter)) {
+      setSelectedLetters(
+        selectedLetters.filter((l) => l !== letter)
+      );
+    } else {
+      setSelectedLetters([...selectedLetters, letter]);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -60,24 +79,29 @@ export default function AirportSelector({
         </button>
       </div>
 
-      <div className="sticky top-0 z-10 bg-white border rounded-lg p-3 flex flex-wrap gap-2">
-        {letters.map((letter) => (
-          <a
-            key={letter}
-            href={`#letter-${letter}`}
-            className="px-2 py-1 text-sm rounded border bg-gray-100 hover:bg-gray-200"
-          >
-            {letter}
-          </a>
-        ))}
+      <div className="flex flex-wrap gap-2">
+        {availableLetters.map((letter) => {
+          const selected = selectedLetters.includes(letter);
+
+          return (
+            <button
+              key={letter}
+              type="button"
+              onClick={() => toggleLetter(letter)}
+              className={`px-3 py-1 rounded border ${
+                selected
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-gray-100 hover:bg-gray-200"
+              }`}
+            >
+              {letter}
+            </button>
+          );
+        })}
       </div>
 
-      {groupedByLetter.map(([letter, realms]) => (
-        <div
-          key={letter}
-          id={`letter-${letter}`}
-          className="space-y-3 scroll-mt-16"
-        >
+      {visibleGroups.map(([letter, realms]) => (
+        <div key={letter} className="space-y-3">
           <h2 className="text-lg font-bold border-b pb-2">
             {letter} ({realms.length})
           </h2>
