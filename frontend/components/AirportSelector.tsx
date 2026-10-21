@@ -39,7 +39,7 @@ export default function AirportSelector({
         </button>
       </div>
 
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="columns-1 md:columns-2 xl:columns-3 gap-4">
         {Object.entries(airports).map(([realm, organizations]) => {
           const allSelected = organizations.every((airport) =>
             selectedAirports.includes(airport)
@@ -48,7 +48,7 @@ export default function AirportSelector({
           return (
             <div
               key={realm}
-              className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm"
+              className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm break-inside-avoid mb-4"
             >
               <div className="flex items-center gap-2 mb-3">
                 <input
