@@ -53,6 +53,10 @@ export default function AirportSelector({
     ([_, realms]) => realms
   );
 
+  const visibleOrganizations = visibleRealms.flatMap(
+    ([_, organizations]) => organizations
+  );
+
   const toggleLetter = (letter: string) => {
     if (selectedLetters.includes(letter)) {
       setSelectedLetters(
@@ -65,24 +69,6 @@ export default function AirportSelector({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-4">
-        <button
-          type="button"
-          onClick={() => onChange(Object.values(airports).flat())}
-          className="text-sm text-blue-600 hover:underline"
-        >
-          Select All
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onChange([])}
-          className="text-sm text-blue-600 hover:underline"
-        >
-          Clear
-        </button>
-      </div>
-
       <div className="flex flex-wrap gap-2">
         {availableLetters.map((letter) => {
           const selected = selectedLetters.includes(letter);
@@ -102,6 +88,32 @@ export default function AirportSelector({
             </button>
           );
         })}
+      </div>
+
+      <div className="flex gap-4">
+        <button
+          type="button"
+          onClick={() => onChange(visibleOrganizations)}
+          className="text-sm text-blue-600 hover:underline"
+        >
+          Select All Visible
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            const visibleSet = new Set(visibleOrganizations);
+
+            onChange(
+              selectedAirports.filter(
+                (airport) => !visibleSet.has(airport)
+              )
+            );
+          }}
+          className="text-sm text-blue-600 hover:underline"
+        >
+          Clear Visible
+        </button>
       </div>
 
       <div className="columns-1 md:columns-2 xl:columns-3 gap-4">
