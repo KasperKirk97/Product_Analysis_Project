@@ -96,7 +96,7 @@ export default function AirportSelector({
           onClick={() => onChange(visibleOrganizations)}
           className="text-sm text-blue-600 hover:underline"
         >
-          Select All Visible
+          Select Visible
         </button>
 
         <button
@@ -113,6 +113,14 @@ export default function AirportSelector({
           className="text-sm text-blue-600 hover:underline"
         >
           Clear Visible
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onChange([])}
+          className="text-sm text-blue-600 hover:underline"
+        >
+          Clear All
         </button>
       </div>
 
