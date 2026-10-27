@@ -11,38 +11,32 @@ export default function ProductSelector({
   selectedProducts,
   onChange,
 }: Props) {
-
   const toggleProduct = (
     productId: string
   ) => {
-
     if (
       selectedProducts.includes(
         productId
       )
     ) {
-
       onChange(
         selectedProducts.filter(
           (id) =>
             id !== productId
         )
       );
-
     } else {
-
       onChange([
         ...selectedProducts,
         productId,
       ]);
-
     }
   };
 
   return (
     <div className="space-y-3">
 
-      <div className="flex items-center justify-between">
+      <div className="space-y-2">
 
         <label className="text-sm font-semibold uppercase tracking-wide text-slate-500">
           Products

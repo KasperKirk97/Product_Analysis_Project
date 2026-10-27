@@ -71,20 +71,16 @@ export default function ComparisonPage() {
   } = useMetadata(datasetB);
 
   useEffect(() => {
+    if (!initialized && Object.keys(airports).length > 1) {
+      const allOrganizations = Object.values(airports).flat();
 
-    if (
-      !initialized && Object.keys(airports).length > 1
-    ) {
-      setDatasetA([airports[0][0]]);
-      setDatasetB([airports[1][0]]);
-
-      setInitialized(true);
+      if (allOrganizations.length > 1) {
+        setDatasetA([allOrganizations[0]]);
+        setDatasetB([allOrganizations[1]]);
+        setInitialized(true);
+      }
     }
-
-  }, [
-    airports,
-    initialized,
-  ]);
+  }, [airports, initialized]);
 
   useEffect(() => {
 
