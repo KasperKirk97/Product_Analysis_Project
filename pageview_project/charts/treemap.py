@@ -51,9 +51,11 @@ def build_treemap_data(df):
         )
     )
     nodes = {}
-    for path, row in grouped.iterrows():
-        views = row["views"]
-        users = row["users"]
+    node_org_views = {}
+
+    for row in df.itertuples():
+
+        path = row.view_name
 
         for node, parent in get_nodes(path):
 
@@ -64,42 +66,49 @@ def build_treemap_data(df):
                     "users": set()
                 }
 
-            nodes[node]["views"] += views
-            nodes[node]["users"].update(users)
+            nodes[node]["views"] += row.views
+            nodes[node]["users"].add(row.user_id)
 
-        node_top_organizations = {}
+            if node not in node_org_views:
+                node_org_views[node] = {}
 
-    #top 5 organizations loop
-    for node in nodes.keys():
-
-        matching = df[
-            df["view_name"].str.startswith(node)
-        ]
-
-        top_orgs = (
-            matching
-            .groupby(
-                ["realm", "organization_id"],
-                as_index=False
-            )["views"]
-            .sum()
-            .sort_values(
-                "views",
-                ascending=False
+            org_key = (
+                row.realm,
+                row.organization_id
             )
-            .head(5)
-        )
+
+            node_org_views[node][org_key] = (
+                node_org_views[node].get(
+                    org_key,
+                    0
+                )
+                + row.views
+            )
+
+    node_top_organizations = {}
+
+    for node, orgs in node_org_views.items():
+
+        top_orgs = sorted(
+            orgs.items(),
+            key=lambda x: x[1],
+            reverse=True
+        )[:5]
 
         node_top_organizations[node] = "<br>".join(
             [
                 (
-                    f"{row['realm']} - "
-                    f"{row['organization_id']} : "
-                    f"{row['views']:,.0f} views"
+                    f"{realm} - "
+                    f"{organization_id} : "
+                    f"{views:,.0f} views"
                 )
-                for _, row in top_orgs.iterrows()
+                for (
+                    realm,
+                    organization_id
+                ), views in top_orgs
             ]
         )
+
     
     ids = list(nodes.keys())
     parents = [nodes[n]["parent"] for n in ids]
