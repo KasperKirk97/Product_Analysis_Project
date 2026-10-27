@@ -5,6 +5,7 @@ export type TreemapData = {
   users: number[];
   log_views: number[];
   percent_root: number[];
+  percent_users: number[];
 };
 
 export type ComparisonData = {

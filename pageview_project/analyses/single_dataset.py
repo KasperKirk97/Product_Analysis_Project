@@ -19,11 +19,6 @@ def render_single_dataset():
         st.stop()
 
     available_products = get_available_products(selected_airports)
-    # available_products = sorted(
-    #     df["product_short_name"]
-    #     .dropna()
-    #     .unique()
-    # )
     selected_products = product_filter2(available_products,PRODUCTS)
 
     if not selected_products:

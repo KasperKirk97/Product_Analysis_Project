@@ -13,6 +13,7 @@ class TreemapData:
     users: list
     log_views: list
     percent_root: list
+    percent_users: list
 
 @dataclass
 class ComparisonData:
@@ -77,10 +78,15 @@ def build_treemap_data(df):
         if parent == ""
     ]
     total_views = sum(views[i] for i in root_indices)
+    total_users = sum(users[i] for i in root_indices)
 
     percent_root = [
         100 * v / total_views
         for v in views
+    ]
+    percent_users = [
+            100 * u / total_users
+            for u in users
     ]
     return TreemapData(
         ids = ids,
@@ -89,6 +95,7 @@ def build_treemap_data(df):
         users = users,
         log_views = log_values,
         percent_root = percent_root,
+        percent_users = percent_users
     )
 
 def build_comparison_data(df_a,df_b):

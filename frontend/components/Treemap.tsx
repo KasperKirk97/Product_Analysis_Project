@@ -43,6 +43,7 @@ export default function Treemap({
               data.users[index],
               data.percent_root[index],
               data.ids[index],
+              data.percent_users[index]
             ]
           ),
 
@@ -50,13 +51,15 @@ export default function Treemap({
             "%{label}<br>" +
             "%{customdata[0]:.0f} views<br>" +
             "%{customdata[1]:.0f} users<br>" +
-            "%{customdata[2]:.2f}%",
+            "%{customdata[2]:.2f}% views<br>" +
+            "%{customdata[4]:.2f}% users",
 
           hovertemplate:
             "<b>%{customdata[3]}</b><br>" +
             "Views: %{customdata[0]:.0f}<br>" +
             "Users: %{customdata[1]:.0f}<br>" +
-            "Share: %{customdata[2]:.2f}%</a>",
+            "Views Percentage: %{customdata[2]:.2f}%<br>" +
+            "Users Percentage: %{customdata[4]:.2f}%</a>",
 
           marker: {
             line: {
