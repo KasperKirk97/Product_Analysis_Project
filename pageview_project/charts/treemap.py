@@ -14,6 +14,7 @@ class TreemapData:
     log_views: list
     percent_root: list
     percent_users: list
+    top_organizations: list
 
 @dataclass
 class ComparisonData:
@@ -65,12 +66,47 @@ def build_treemap_data(df):
 
             nodes[node]["views"] += views
             nodes[node]["users"].update(users)
+
+        node_top_organizations = {}
+
+    #top 5 organizations loop
+    for node in nodes.keys():
+
+        matching = df[
+            df["view_name"].str.startswith(node)
+        ]
+
+        top_orgs = (
+            matching
+            .groupby(
+                ["realm", "organization_id"],
+                as_index=False
+            )["views"]
+            .sum()
+            .sort_values(
+                "views",
+                ascending=False
+            )
+            .head(5)
+        )
+
+        node_top_organizations[node] = "<br>".join(
+            [
+                (
+                    f"{row['realm']} - "
+                    f"{row['organization_id']} : "
+                    f"{row['views']:,.0f} views"
+                )
+                for _, row in top_orgs.iterrows()
+            ]
+        )
     
     ids = list(nodes.keys())
     parents = [nodes[n]["parent"] for n in ids]
     views = [nodes[n]["views"] for n in ids]
     users = [len(nodes[n]["users"]) for n in ids]
     log_values = [math.log1p(v) for v in views] # Used for scaling of visualization
+    top_organizations = [node_top_organizations.get(node,"") for node in ids]
 
     # Calculate percentage of total views
     root_indices = [
@@ -88,6 +124,7 @@ def build_treemap_data(df):
             100 * u / total_users
             for u in users
     ]
+
     return TreemapData(
         ids = ids,
         parents = parents,
@@ -95,7 +132,8 @@ def build_treemap_data(df):
         users = users,
         log_views = log_values,
         percent_root = percent_root,
-        percent_users = percent_users
+        percent_users = percent_users,
+        top_organizations=top_organizations
     )
 
 def build_comparison_data(df_a,df_b):
